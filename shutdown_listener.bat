@@ -10,8 +10,8 @@ echo Listening on %BROKER_HOST%:%BROKER_PORT%, topic "%TOPIC%" ...
 "C:\Program Files\mosquitto\mosquitto_sub.exe" -h %BROKER_HOST% -p %BROKER_PORT% -i %TOPIC%_listener -t "%TOPIC%" -C 1 > "%temp%\mqtt_msg.txt"
 set /p MSG=<"%temp%\mqtt_msg.txt"
 if "%MSG%"=="%SECRET%" (
-    shutdown /s /t 30 /c "Remote shutdown via MQTT"
+    shutdown /s /t 10 /c "Remote shutdown in 10 seconds via MQTT"
 ) else if "%MSG%"=="%RESTART_SECRET%" (
-    shutdown /r /t 30 /c "Remote restart via MQTT"
+    shutdown /r /t 10 /c "Remote restart in 10 seconds via MQTT"
 )
 goto loop
