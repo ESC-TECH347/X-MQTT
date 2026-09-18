@@ -3,6 +3,7 @@ param(
     [string]$PowerToysPath
 )
 
+Get-Process -Name "PowerToys.Runner" -ErrorAction SilentlyContinue | Stop-Process -Force
 Get-Process -Name "PowerToys" -ErrorAction SilentlyContinue | Stop-Process -Force
 Get-Process -Name "PowerToys.KeyboardManagerEngine" -ErrorAction SilentlyContinue | Stop-Process -Force
 
