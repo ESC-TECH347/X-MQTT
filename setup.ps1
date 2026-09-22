@@ -73,7 +73,7 @@ $form.Controls.Add($labelPowerToys)
 $textPowerToys = New-Object System.Windows.Forms.TextBox
 $textPowerToys.Location = New-Object System.Drawing.Point(20,325)
 $textPowerToys.Size = New-Object System.Drawing.Size(320,20)
-$textPowerToys.Text = "C:\Program Files\PowerToys\PowerToys.exe"
+$textPowerToys.Text = "%LocalAppData%\PowerToys\PowerToys.exe"
 $form.Controls.Add($textPowerToys)
 
 $buttonSave = New-Object System.Windows.Forms.Button
@@ -94,7 +94,7 @@ $buttonSave.Add_Click({
     $browser = $textBrowser.Text.Trim()
     if ($browser -eq "") { $browser = "MythricClient" }
     $ptPath = $textPowerToys.Text.Trim()
-    if ($ptPath -eq "") { $ptPath = "C:\Program Files\PowerToys\PowerToys.exe" }
+    if ($ptPath -eq "") { $ptPath = "%LocalAppData%\PowerToys\PowerToys.exe" }
     $configPath = Join-Path $PSScriptRoot "config.bat"
 
     $lines = @(
