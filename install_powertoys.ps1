@@ -16,6 +16,16 @@ else {
             throw "Could not find $installerPath. Re-run M3PCControlSetup.exe on this PC so it gets copied into C:\Scripts, then try again."
         }
 
+        # Defensive: if an earlier broken/partial attempt left PowerToys
+        # registered in Windows' installed-programs database without the
+        # actual files on disk, the installer below would detect that
+        # registration and pop its "Modify Setup / Uninstall" repair UI
+        # instead of installing quietly - even with /quiet passed. Clearing
+        # any stale registration first avoids that. This uninstall pass is
+        # expected to no-op almost instantly if nothing is actually
+        # registered, so it's safe to always run.
+        Start-Process -FilePath $installerPath -ArgumentList @("/uninstall", "/quiet", "/norestart") -Wait -PassThru | Out-Null
+
         Write-Host "Installing PowerToys silently to C:\Program Files\PowerToys - this can take a minute or two, please wait..."
         # NOTE: current PowerToys installers (WiX Burn-based, 0.53.0+) use /install
         # /quiet /norestart, NOT the old --silent --install_dir syntax from older
@@ -32,8 +42,24 @@ else {
             throw "The PowerToys installer exited with code $($proc.ExitCode). Log: $logPath"
         }
 
+        # The installer's own process can report success and exit before the
+        # file is actually fully placed - PowerToys' installer is WiX Burn-
+        # based and sometimes hands off to a second, elevated copy of itself
+        # in the background, so the process this script waited on can finish
+        # before that second copy is done writing files. Checking Test-Path
+        # exactly once right after Start-Process returns caused false
+        # "install failed" errors even though PowerToys really did finish
+        # installing a few seconds later. Poll for a while instead of
+        # failing immediately.
+        $maxWaitSeconds = 60
+        $waited = 0
+        while (-not (Test-Path $defaultPath) -and $waited -lt $maxWaitSeconds) {
+            Start-Sleep -Seconds 2
+            $waited += 2
+        }
+
         if (-not (Test-Path $defaultPath)) {
-            throw "The installer reported success but PowerToys.exe still isn't at $defaultPath. Check the log at $logPath for details."
+            throw "The installer reported success but PowerToys.exe still isn't at $defaultPath after waiting $maxWaitSeconds seconds. Check the log at $logPath for details."
         }
 
         Write-Host "PowerToys installed successfully."
