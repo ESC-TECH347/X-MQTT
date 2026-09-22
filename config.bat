@@ -10,4 +10,4 @@ set CLEARCACHE_SECRET=CLEARCACHE_NOW_9x7q
 set STOPKM_SECRET=STOPKM_NOW_9x7q
 set RESTARTKM_SECRET=RESTARTKM_NOW_9x7q
 set BROWSER_PROCESS=MythricClient
-set POWERTOYS_PATH=C:\Program Files\PowerToys\PowerToys.exe
+set POWERTOYS_PATH=%LocalAppData%\PowerToys\PowerToys.exe
