@@ -114,6 +114,17 @@ $buttonSave.Add_Click({
     )
     $lines | Set-Content -Path $configPath -Encoding ASCII
 
+    # Only PC6 ever needs PowerToys auto-installed (the Crime Scene desk PC).
+    # Since PC6 could get picked for other reasons too (wrong X-Frame, a future
+    # unrelated PC6), always confirm before actually installing anything.
+    if ($pcNumber -eq "PC6") {
+        $ptConfirm = [System.Windows.Forms.MessageBox]::Show("Are you installing Crime Scene now?", "PowerToys Setup", "YesNo", "Question")
+        if ($ptConfirm -eq "Yes") {
+            $installScript = Join-Path $PSScriptRoot "install_powertoys.ps1"
+            Start-Process -FilePath "powershell.exe" -ArgumentList @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "`"$installScript`"") -Wait
+        }
+    }
+
     [System.Windows.Forms.MessageBox]::Show("Saved! This PC is set up as $topic, connecting to $ip.", "Setup Complete", "OK", "Information")
     $form.Close()
 })
